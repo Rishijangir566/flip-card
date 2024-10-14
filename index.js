@@ -1,63 +1,90 @@
+let imgArray = ["image/dog.avif", "image/dog2.avif", "image/dog3.avif", "image/dog4.avif", "image/dog5.avif", "image/dog6.avif"];
+let mainImgArray = [...imgArray, ...imgArray]
+let tempArr = [];
+let countImage =0;
+let pushingImgArr=[];
+let clickCounter=0;
+let timer=0
+let matchImg=0;
+
 let start = document.querySelector("#btn");
 let container = document.querySelector("#container");
-let flipCards = document.querySelectorAll(".flip-card"); // All flip cards
+let flipFrontImg = document.querySelectorAll(".flip-card-front img");
+let flipCardsBack = document.querySelectorAll(".flip-card-back");
+let Result = document.querySelector("#result");
 
-let imgArray = ["image/dog.avif", "image/dog2.avif", "image/dog3.avif", "image/dog4.avif", "image/dog5.avif", "image/dog6.avif"];
 
-let firstCard = null;
-let secondCard = null;
-let isFlipping = false;
 
 start.addEventListener("click", function () {
     start.style.display = "none";
     container.style.display = "block";
+    setImage()
+    resetGame()
 });
 
-flipCards.forEach(item => {
-    item.addEventListener("click", function () {
-        if (isFlipping || item === firstCard) return; // Prevent clicking during flip or on the same card
-        
-        let flipCardInner = item.querySelector(".flip-card-inner");
-        let flipCardBack = item.querySelector(".flip-card-back");
 
-        flipCardBack.innerHTML = "";  // Clear existing content in the back of the card
-        let flipImg = document.createElement("img");
-        let randomImage = getRandomNum();
-        flipImg.src = imgArray[randomImage];
-        flipCardBack.append(flipImg);
-        
-        flipCardInner.style.transform = "rotateY(180deg)"; // Flip the card
+let setImage=(() => {
+    for (let i = 0; i < mainImgArray.length; i++) {
+        let image = document.createElement("img")
+        image.src = mainImgArray[getRandomNum()]
+        flipCardsBack[i].append(image)
+    }
+})
 
-        if (!firstCard) {
-            // This is the first card clicked
-            firstCard = item;
-        } else if (!secondCard) {
-            // This is the second card clicked
-            secondCard = item;
-            isFlipping = true;
+flipFrontImg.forEach(item => {
+    item.addEventListener("click",function(){
+        countImage++
+        clickCounter++
+          item.parentElement.parentElement.classList.add("back-flip")
+         pushingImgArr.push( item.parentElement.nextElementSibling.children[0])
+        //  console.log(pushingImgArr);
+         
+         setTimeout(() => {
+             if(countImage>1){
+                if(pushingImgArr[0].src===pushingImgArr[1].src){
+                   pushingImgArr.length=0;
+                   countImage=0;
+                   matchImg++
+                }
+                else{
+                    pushingImgArr.forEach(items => {
+                       items.parentElement.parentElement.classList.remove("back-flip") 
+                    });
+                    pushingImgArr.length=0;
+                   countImage=0;
+                }
+             }
+         },1000);
 
-            // Check for match or reset after a short delay
-            setTimeout(() => {
-                resetCards();
-            }, 1000);
-        }
-    });
-});
+         setInterval(timer)
+
+ })
+    
+  });
+   
+  function resetGame (){
+    let Interval = setInterval(() => {
+        timer++
+
+             if(timer===60){
+                 container.style.display="none"
+                 Result.style.display="block"
+                 let showClick=document.createElement("h2") 
+                 showClick.innerHTML=`click is ${clickCounter} and match is ${matchImg} `
+                 Result.append(showClick)
+                 clearInterval(Interval)
+             }
+       }, 1000);
+  }
+
+
 
 function getRandomNum() {
-    return Math.floor(Math.random() * imgArray.length);
+    let randomIndex = Math.floor(Math.random() * mainImgArray.length);
+    if (tempArr.includes(randomIndex)) return getRandomNum()
+    else {
+        tempArr.push(randomIndex)
+        return randomIndex
+    }
 }
 
-function resetCards() {
-    let firstFlipInner = firstCard.querySelector(".flip-card-inner");
-    let secondFlipInner = secondCard.querySelector(".flip-card-inner");
-
-    // Reset the cards by flipping them back
-    firstFlipInner.style.transform = "rotateY(0deg)";
-    secondFlipInner.style.transform = "rotateY(0deg)";
-
-    // Reset variables for the next round
-    firstCard = null;
-    secondCard = null;
-    isFlipping = false;
-}
