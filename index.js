@@ -68,7 +68,7 @@ flipFrontImg.forEach(item => {
     let Interval = setInterval(() => {
        times.innerHTML=--timer
 
-             if(timer===0){
+             if(timer===0||matchImg===6){
                  container.style.display="none"
                  Result.style.display="block"
                  let showClick=document.createElement("h2") 
