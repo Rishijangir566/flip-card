@@ -66,7 +66,7 @@ flipFrontImg.forEach(item => {
    
   function resetGame (){
     let Interval = setInterval(() => {
-       times.innerHTML=--timer
+       times.innerHTML="TIME :"+ --timer
 
              if(timer===0||matchImg===6){
                  container.style.display="none"
